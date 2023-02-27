@@ -1,5 +1,6 @@
 import csv
 import requests
+import pandas as pd
 
 POST_URL = 'https://sig.ville.gouv.fr/recherche-adresses-qp-polville-v2019'
 PRIORITAIRE = 'adresse recherchée est située dans le quartier prioritaire'
@@ -34,5 +35,24 @@ def main():
             adresse_info = get_adresse_info(adresse)
             print_adresse_info(adresse_info, adresse)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
+
+def read_excel_file(file_name):
+    use_cols = ['Organisation - Numéro de maison', 'Organisation - Nom de rue/route', 'Organisation - Ville/agglomération/village/localité', 'Organisation - Code postal']
+
+    df = pd.read_excel(file_name, usecols=use_cols, dtype=str)
+
+    new_col_names =  {
+        use_cols[0]: 'num_adresse'
+        , use_cols[1]: 'nom_voie'
+        , use_cols[2]: 'nom_commune'
+        , use_cols[3]: 'code_postal'
+    }
+
+    df_renamed = df.rename(mapper=new_col_names, axis=1)
+
+    df_with_json_payload = df_renamed.apply(lambda x: x.to_json(), axis=1)
+    print(df_with_json_payload.head(10))
+
+read_excel_file('organizations-11557216-596.xlsx')
