@@ -58,11 +58,12 @@ def is_in_quartier_prioritaire(adresse_info, adresse):
 
 def main():
     """
-    Iterate on each row from Excel file:
+    1. Iterate on each row from Excel file:
         1. Get adresse information from Excel content
         2. Send web request with the adresse to get more information about the location
         3. From the web response, determine if the adresse is in priority zone
-        4. Write Excel file with the new column is_in_quartier_prioritaire
+    
+    2. Write Excel file with the new column is_in_quartier_prioritaire
     """
     df = pd.read_excel(FILE_NAME, dtype=str)
 
