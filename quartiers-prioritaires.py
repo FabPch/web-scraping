@@ -17,6 +17,10 @@ FILE_NAME = 'organizations-11557216-596.xlsx'
 FILE_NAME_ANSWER = 'response.xlsx'
 
 def get_adresse_info(adresse):
+    """
+    Send web POST request with school adresse as payload.
+    Receive information about the location (is in priority zone ?) 
+    """
     payload = {
         'num_adresse': adresse['Organisation - Numéro de maison'],
         'nom_voie': adresse['Organisation - Nom de rue/route'],
@@ -29,6 +33,14 @@ def get_adresse_info(adresse):
     return response.json()
 
 def is_in_quartier_prioritaire(adresse_info, adresse):
+    """
+    From web response content, determine if the school is in a priority zone.
+    (Several different answers are expected, even for the same result)
+    
+    If the different answers do not appear in the response, a file is written
+    with the web response content. Then it can be analyzed manually later, in order
+    to add another possible answer.
+    """
     info = adresse_info['fullResponseTpl']
     nom_commune = adresse['Organisation - Ville/agglomération/village/localité']
 
@@ -45,6 +57,13 @@ def is_in_quartier_prioritaire(adresse_info, adresse):
         return 'Presque...'
 
 def main():
+    """
+    Iterate on each row from Excel file:
+        1. Get adresse information from Excel content
+        2. Send web request with the adresse to get more information about the location
+        3. From the web response, determine if the adresse is in priority zone
+        4. Write Excel file with the new column is_in_quartier_prioritaire
+    """
     df = pd.read_excel(FILE_NAME, dtype=str)
 
     print(f'row count: {len(df.index)}')
